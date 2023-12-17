@@ -116,12 +116,14 @@ def age_job(collection):
 
 #Функция вывода максимальной заработной платы при минимальном возрасте
 def max_salary_min_age(collection):
-    q = [
-        {"$group": {"_id": "age",
-                    "age": {"$min": "$age"},
+        q = [
+        {"$group": {"_id": "$age",
                     "max_salary": {"$max": "$salary"}}
         },
-        {"$match": {"age": 18}}
+        {"$group": {"_id": "result",
+                    "min_age": {"$min": "$_id"},
+                    "max_salary": {"$max": "$max_salary"}}
+        }
         ]
     items = []
     for row in collection.aggregate(q):
