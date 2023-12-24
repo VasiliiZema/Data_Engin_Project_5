@@ -116,17 +116,19 @@ def age_job(collection):
 
 #Функция вывода максимальной заработной платы при минимальном возрасте
 def max_salary_min_age(collection):
-        q = [
-        {"$group": {"_id": "$age",
-                    "max_salary": {"$max": "$salary"}}
+    q = [
+        {
+            '$sort': {'age': 1,
+                   'salary': -1}
         },
-        {"$group": {"_id": "result",
-                    "min_age": {"$min": "$_id"},
-                    "max_salary": {"$max": "$max_salary"}}
+        {
+            '$limit': 1
         }
         ]
+
     items = []
     for row in collection.aggregate(q):
+        del row["_id"]
         items.append(row)
 
     with open("max_salary_min_age.json", "w", encoding="utf-8") as file:
@@ -135,15 +137,20 @@ def max_salary_min_age(collection):
 #Функция вывода минимальной заработной платы при максимальной возрасте
 def min_salary_max_age(collection):
     q = [
-        {"$group": {"_id": "$age",
-                    "age": {"$max": "$age"},
-                    "min_salary": {"$min": "$salary"}}
+        {
+            '$sort': {'age': -1,
+                   'salary': 1}
         },
-        {"$match": {"age": 65}}
+        {
+            '$limit': 1
+        }
         ]
     items = []
+
     for row in collection.aggregate(q):
+        del row["_id"]
         items.append(row)
+
     with open("min_salary_max_age.json", "w", encoding="utf-8") as file:
         file.write(json.dumps(items, ensure_ascii=False))
 
@@ -260,8 +267,8 @@ data = open_json("task_2_item.pkl")
 #salary_job(connect())
 #age_sity(connect())
 #age_job(connect())
-#max_salary_min_age(connect())
-#min_salary_max_age(connect())
+max_salary_min_age(connect())
+min_salary_max_age(connect())
 #describe_age_sity(connect())
 #describe_salary_sity(connect())
 #describe_salary_job(connect())
